@@ -15,12 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -32,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
@@ -68,7 +64,7 @@ public class TVGuideFragment extends SherlockFragment
 		return rootView;
 	}
 	
-	private void parseDatabase() // TODO: Update strings.xml value dbTimestamp every time you edit the database
+	private void parseDatabase() // TODO: Update numeric.xml value dbVersion every time you increment the versionCode in AndroidManifest.xml
 	/** Manages accessing the database file which must be copied into
 	 * internal storage (/data/data/.../) on first run because it can't
 	 * be accessed directly from the /res/raw directory */
@@ -78,27 +74,16 @@ public class TVGuideFragment extends SherlockFragment
 		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity());
 		
-		final DateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-		final String dbTimestampStr = (String) getResources().getText(R.string.dbTimestamp);
+		final int dbVersionInt = getResources().getInteger(R.integer.dbVersion);
+		final int dbVersionPrefs = Integer.parseInt(prefs.getString("dbVersion", "0"));
 		
-		Date dbInstallDate = null;
-		Date dbTimestamp = null;
-		
-		try {
-			dbInstallDate = df.parse(prefs.getString("dbInstallDate", dbTimestampStr));
-			dbTimestamp = df.parse(dbTimestampStr);
-		} catch (ParseException e) {
-			// If this is caught: you have incorrectly formatted
-			// the dbTimestamp string in the strings.xml file
-			Log.d("RPI", "ParseException in TVGuideFragment. Incorrect dbTimestamp format in strings.xml");
-		}
-		
-		if (dbTimestamp.after(dbInstallDate))
+		if (dbVersionPrefs < dbVersionInt)
 		{
 			final File oldDB = new File(dbPathName);
 			oldDB.delete();
 		}
-		prefs.edit().putString("dbInstallDate", df.format(new Date())).commit();
+		prefs.edit().putString("dbVersion", Integer.toString(dbVersionInt));
+		
 		try
 		{
 			// check to see if database already exists in internal storage
@@ -122,6 +107,7 @@ public class TVGuideFragment extends SherlockFragment
 			}
 			catch (IOException f)
 			{
+				Toast.makeText(getSherlockActivity(), "TV Guide failed. Please re-install app.", Toast.LENGTH_SHORT).show();
 				throw new Error("Error copying database");
 			}
 		}
@@ -131,6 +117,7 @@ public class TVGuideFragment extends SherlockFragment
 		}
 		catch (SQLException e) // this should never be reached, or something is terribly wrong
 		{
+			Toast.makeText(getSherlockActivity(), "TV Guide failed. Please re-install app.", Toast.LENGTH_SHORT).show();
 			throw new Error("Error opening external database");
 		}
 		

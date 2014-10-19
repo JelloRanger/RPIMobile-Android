@@ -8,7 +8,7 @@ import org.mcsoxford.rss.RSSItem;
 import org.mcsoxford.rss.RSSReader;
 import org.mcsoxford.rss.RSSReaderException;
 
-import edu.rpi.rpimobile.model.RSSObject;
+import edu.rpi.rpimobile.model.RSSArticle;
 
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -20,22 +20,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-
-
 //Sports news feeds
-public class AthleticsFragment extends SherlockFragment {
-
+public class AthleticsFragment extends SherlockFragment
+{
 	//All variables to be used throughout the function
-	private ArrayList<RSSObject> stories;
-	private ArrayList<RSSObject> tempstories;
-	private ArrayList<RSSObject> finlist = new ArrayList<RSSObject>();
-	private RSSObject temp;
+	private ArrayList<RSSArticle> stories;
+	private ArrayList<RSSArticle> tempstories;
+	private ArrayList<RSSArticle> finlist = new ArrayList<RSSArticle>();
+	private RSSArticle temp;
 	private ListView rsslist;
 	private RSSListAdapter rssadapter;
 	private MenuItem refreshbutton;
@@ -52,22 +51,20 @@ public class AthleticsFragment extends SherlockFragment {
         setHasOptionsMenu(true);
         
         //initialize data
-        stories = new ArrayList<RSSObject>();
-        tempstories = new ArrayList<RSSObject>();
+        stories = new ArrayList<RSSArticle>();
+        tempstories = new ArrayList<RSSArticle>();
         
         
         //set an adapter up for the listview to handle displaying the data
         rsslist = (ListView) rootView.findViewById(R.id.rsslist);
         rssadapter = new RSSListAdapter(this.getActivity(), this, stories);
-        rsslist.setAdapter(rssadapter);//*/
+        rsslist.setAdapter(rssadapter);
         
         //Initialize the download cycle to 0
         cyclenum = 0;
         //start the download cycle
         refreshcycle();
-        
-        
-        
+
         return rootView;
     }
     
@@ -101,7 +98,10 @@ public class AthleticsFragment extends SherlockFragment {
 		//If the refresh button was pressed
         if (item == refreshbutton){
         	//refresh the data
-        	refreshcycle();
+        	if(downloadtask != null && downloadtask.getStatus() != Status.RUNNING)
+        	{
+        		refreshcycle();
+        	}
         	
         }
       //This passes the call back up the chain to the main class, which also handles onOptionsitemSeleced events
@@ -135,8 +135,7 @@ public class AthleticsFragment extends SherlockFragment {
 			,"http://www.rpiathletics.com/rss.aspx?path=wsoc","http://www.rpiathletics.com/rss.aspx?path=wswim"
 			,"http://www.rpiathletics.com/rss.aspx?path=wten","http://www.rpiathletics.com/rss.aspx?path=wtrack"
 			,"http://www.rpiathletics.com/rss.aspx?path=wbball"};
-	
-	
+
 	//The new and improved version of the refreshcycle.
 	//This allows the various rss feeds to be downloaded sequentially
 	public void refreshcycle(){
@@ -144,14 +143,14 @@ public class AthleticsFragment extends SherlockFragment {
 		//shared preference object. To retrieve the user preferences
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		
-		if(cyclenum==0){
+		if(cyclenum == 0){
 			//for the first item set the action bar to show indeterminate progress and clear the list of stories
 			getActivity().setProgressBarIndeterminateVisibility(Boolean.TRUE);
 			stories.clear();
 		}
 		
 		
-		if(cyclenum==tags.length){
+		if(cyclenum == tags.length){
 			//if it's the last item set the action bar back to normal and reset the cycle counter
 			getActivity().setProgressBarIndeterminateVisibility(Boolean.FALSE);
     		logcat( "Loading complete List size:"+stories.size());
@@ -161,7 +160,7 @@ public class AthleticsFragment extends SherlockFragment {
 			//for all other items save the cycle number
 			int ctemp = cyclenum;
 			//increment the cycle number
-			cyclenum++;
+			++cyclenum;
 			//the first object is defaulted to true and all others are false by defualt
 			//so the default bit of the shared preference call is ctemp==0, 
 			//which is true for the 0th item and false for all other items
@@ -193,11 +192,11 @@ public class AthleticsFragment extends SherlockFragment {
 			//clear the temporary list
 			tempstories.clear();
 			logcat( "Begin doInBackground");
+			RSSReader reader = new RSSReader();
 			try {
 				//try to download all of the RSS data
 				logcat( "Initializing variables");
 				//This project uses the android-rss library to handle all RSS calls: https://github.com/ahorn/android-rss
-				RSSReader reader = new RSSReader();
 				String uri = params[0];
 				logcat( "Downloading feed items");
 				RSSFeed feed = reader.load(uri);
@@ -206,7 +205,7 @@ public class AthleticsFragment extends SherlockFragment {
 				logcat( "Parsing feed");
 				for(int i = 0; i<feedlist.size(); i++){
 					//for each item populate the temporary RSSObject with all data
-					temp = new RSSObject();
+					temp = new RSSArticle();
 					temp.setTitle(feedlist.get(i).getTitle());
 					temp.setLink(feedlist.get(i).getLink().toString());
 					temp.setTime(feedlist.get(i).getPubDate());
@@ -215,16 +214,29 @@ public class AthleticsFragment extends SherlockFragment {
 					tempstories.add(temp);
 				}
 				logcat( "Feed parsed");
-				reader.close();					// Code edited by Peter Piech on 3/14/2014: added line to fix warning of resource leak
-			} catch (RSSReaderException e) {
+
+			} catch (Exception e) {
 				e.printStackTrace();
-			}	
+				return false;
+			}
+			finally
+			{
+				reader.close();
+			}
 	        
 	        logcat( "Exiting AsynchTask");
 			return true;
 		}
 		
-		protected void onPostExecute(Boolean results) {
+		protected void onPostExecute(Boolean results)
+		{
+			//Set the action bar back to normal
+			getSherlockActivity().setProgressBarIndeterminateVisibility(Boolean.FALSE);
+			if (!results)
+			{
+				Toast.makeText(getSherlockActivity(), "Athletics download failed. Try again later.", Toast.LENGTH_LONG).show();
+				return;
+			}
 			//code to be ran in the UI thread after the background thread has completed
 			logcat( "Notifying list");
 			
@@ -240,15 +252,11 @@ public class AthleticsFragment extends SherlockFragment {
 			}
 			//continue the refresh cycle
 			refreshcycle();
-
 		}
-
-		
-		
 	}
     
     //class to add objects to the main list
-    private void addtolist(ArrayList<RSSObject> temp){
+    private void addtolist(ArrayList<RSSArticle> temp){
     	
     	logcat("Combining lists");
     	logcat("Source list: "+stories.size()+" Temp list: "+temp.size());
@@ -311,15 +319,13 @@ public class AthleticsFragment extends SherlockFragment {
 		//Assign the temporary list to the "stories" list
     	assign(stories, finlist);  	
     	logcat( "Lists combined. Source list:"+stories.size());
-    	
     }
-    
-    
+
     //Class to deal with the problem of copying ArrayLists in Java
     //Because ArrayLists really just store pointers to their objects a deepcopy must be made of each
     //item and passed to the list individually. This is much more efficient than using the 
     //java.serialize class to do this automatically.
-    private void assign(ArrayList<RSSObject> target, ArrayList<RSSObject> source){
+    private void assign(ArrayList<RSSArticle> target, ArrayList<RSSArticle> source){
     	logcat( "Starting copy source:"+source.size()+" Target:"+target.size());
     	target.clear();
     	//clear the target list
@@ -335,5 +341,4 @@ public class AthleticsFragment extends SherlockFragment {
 		if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("debugging", false))
 			Log.d("RPI", logtext);
 	}
-    
 }

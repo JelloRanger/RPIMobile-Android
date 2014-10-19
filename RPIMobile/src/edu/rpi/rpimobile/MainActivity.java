@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,7 +29,6 @@ import com.google.android.youtube.player.YouTubeIntents;
 //MainActivity. Holds the navigation drawer and the fragment frame
 public class MainActivity extends SherlockFragmentActivity
 {
- 
     // Declare Variables to be used in this function
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -37,15 +37,14 @@ public class MainActivity extends SherlockFragmentActivity
     private String actiontitle;
     private String[] title;
     private int[] icon;
-    private Fragment weatherFragment = new WeatherFragment();  //Formerly Fragment1
-    private Fragment laundryFragment = new LaundryFragment();  //Formerly Fragment2
-    private Fragment twitterFragment = new TwitterFragment();  //Formerly Fragment3
-    private Fragment athleticsFragment = new AthleticsFragment();  //Formerly Fragment4
-    private Fragment eventsFragment = new EventsFragment();  //Formerly Fragment5
+    private Fragment weatherFragment = new WeatherFragment();
+    private Fragment laundryFragment = new LaundryFragment();
+    private Fragment twitterFragment = new TwitterFragment();
+    private Fragment athleticsFragment = new AthleticsFragment();
+    private Fragment eventsFragment = new EventsFragment();
     private Fragment mapFragment = new MapFragment();
     private Fragment shuttlesFragment = new ShuttlesFragment();
     private Fragment tvguideFragment = new TVGuideFragment();
-    //private Fragment exampleFragment = new ExampleFragment();  //Formerly Fragment6
     
     //Initial function
     @Override
@@ -131,7 +130,7 @@ public class MainActivity extends SherlockFragmentActivity
         		
         }
         else{
-        	logcat( "savedInstance state wasn't null");
+        	logcat("savedInstance state wasn't null");
         }
         
         logcat( "Oncreate ran");
@@ -202,7 +201,9 @@ public class MainActivity extends SherlockFragmentActivity
     //Function that takes the selected item and launches the respective activity
     private void selectItem(int position) {
     	logcat( "Beginnning fragment Transaction");
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+    	FragmentManager fm = getSupportFragmentManager();
+    	fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        FragmentTransaction ft = fm.beginTransaction();
         // Locate Position
         switch (position) {
         case 0: //weather
@@ -221,7 +222,17 @@ public class MainActivity extends SherlockFragmentActivity
         	ft.replace(R.id.content_frame, eventsFragment);
         	break;
         case 5:
-        	ft.replace(R.id.content_frame, shuttlesFragment);
+        	int statusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        	if (statusCode == ConnectionResult.SUCCESS)
+        	{
+        		ft.replace(R.id.content_frame, shuttlesFragment);
+        	}
+        	else if (statusCode != ConnectionResult.SUCCESS)
+        	{
+        		android.widget.Toast.makeText(this,
+        				"Install the latest version of Google Play Services to use this feature",
+        				Toast.LENGTH_LONG).show();
+        	}
         	break;
         case 6: //Map
         	//Toast.makeText(this, "Map selected", Toast.LENGTH_SHORT).show();

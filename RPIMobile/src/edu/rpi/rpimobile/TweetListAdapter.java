@@ -4,7 +4,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import edu.rpi.rpimobile.model.TweetObject;
+import edu.rpi.rpimobile.model.Tweet;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,17 +21,16 @@ public class TweetListAdapter extends BaseAdapter {
  
     // Declare Variables
     Context context;
-	ArrayList<TweetObject> tweets;
+	ArrayList<Tweet> tweets;
     LayoutInflater inflater;
  
-    public TweetListAdapter(Context context, ArrayList<TweetObject> tweets_) {
+    public TweetListAdapter(Context context, ArrayList<Tweet> tweets_) {
         this.context = context;
         this.tweets = tweets_;
     }
  
     @Override
     public int getCount() {
-    	//if(PreferenceManager.getDefaultSharedPreferences(this.context).getBoolean("debugging", false)) Log.d("RPI", "Tweetlist Size:"+tweets.size());
         return tweets.size();
     }
  

@@ -6,7 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.rpi.rpimobile.model.CalEvent;
+import edu.rpi.rpimobile.model.CalendarEvent;
+import edu.rpi.rpimobile.util.Util;
 
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -25,17 +26,16 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
- 
 //Events Calendar fragment
-public class EventsFragment extends SherlockFragment {
+public class EventsFragment extends SherlockFragment
+{
     
 	//All variables to be used throughout the function
 	private JSONObject jObj;
-	private ArrayList<CalEvent> events;
-	private CalendarListAdapter listadapter;
+	private ArrayList<CalendarEvent> events;
+	private EventsListAdapter listadapter;
 	private MenuItem refreshbutton;
 	private JSONCalendarTask downloadtask;
-	
 	
 	//Initial function
 	@Override
@@ -48,21 +48,20 @@ public class EventsFragment extends SherlockFragment {
         setHasOptionsMenu(true);
         
         //initialize data
-        events = new ArrayList<CalEvent>();
+        events = new ArrayList<CalendarEvent>();
         
         //set an adapter up for the listview to handle displaying the data
         ListView callist = (ListView) rootView.findViewById(R.id.calendarlist);
-        listadapter = new CalendarListAdapter(this.getSherlockActivity(), events);
+        listadapter = new EventsListAdapter(this.getSherlockActivity(), events);
         callist.setAdapter(listadapter);
         
         //Start the download of the calendar data
         downloadtask = new JSONCalendarTask();
-		downloadtask.execute(new String[]{"http://events.rpi.edu/webcache/v1.0/jsonDays/31/list-json/no--filter/no--object.json"});
+		downloadtask.execute();
         
        return rootView;
     }
-	
-	
+
 	//Class to be run when the fragment is terminated
 	@Override
 	public void onStop(){
@@ -93,45 +92,44 @@ public class EventsFragment extends SherlockFragment {
         if (item == refreshbutton){
         	//refresh the data
         	downloadtask = new JSONCalendarTask();
-    		downloadtask.execute(new String[]{"http://events.rpi.edu/webcache/v1.0/jsonDays/31/list-json/no--filter/no--object.json"});
-        	
+    		downloadtask.execute();
         }
       //This passes the call back up the chain to the main class, which also handles onOptionsitemSeleced events
         return super.onOptionsItemSelected(item);
     }
-	
-	
-	
-	
-	
+
 	//AsyncTask thread to download calendar data
-	private class JSONCalendarTask extends AsyncTask<String, Void, Boolean> {
+	private class JSONCalendarTask extends AsyncTask<Void, Void, Boolean> {
+		
+		private static final String events_JSON_URL = "http://events.rpi.edu/webcache/v1.0/jsonDays/31/list-json/no--filter/no--object.json";
 
 		//before the thread is executed set the action bar to show indeterminate progress, usually a spinner
 		protected void onPreExecute(){
 			getSherlockActivity().setProgressBarIndeterminateVisibility(Boolean.TRUE);
+			events.clear();
 		}
 		
 		//Class to be ran in another thread
 		@Override
-		protected Boolean doInBackground(String... params) {
+		protected Boolean doInBackground(Void... params) {
 			//If a looper hasn't already been prepared by another thread prepare one for this application
 			if (Looper.myLooper()==null) {
 				 Looper.prepare();
 			 }
 			logcat( "Begining Download");
 			String data;
-			CalEvent temp = new CalEvent();
+			CalendarEvent temp = new CalendarEvent();
 			//Try to download data
 			try {
-			data = ( (new WeatherHttpClient()).getWeatherData(params[0]));//+"&units=imperial"));
+			data = ( (new HttpClient()).getData(events_JSON_URL));
 			logcat( "downloaded data of length "+data.length());
+			data = Util.unescapeHTML(data);
 			}
 			catch(Exception e){
 				//if the download failed quit the thread and notify the user
 				e.printStackTrace();
-				Toast.makeText(getSherlockActivity(), "Calendar Download Failed", Toast.LENGTH_SHORT).show();
-				return true;
+				Toast.makeText(getSherlockActivity(), "Events download failed. Try again later.", Toast.LENGTH_SHORT).show();
+				return false;
 			}
 			//Try to read all of the JSON objects into their respective variables
 			try {
@@ -144,7 +142,7 @@ public class EventsFragment extends SherlockFragment {
 				//loop through each of the event items in the array
 				for(int i = 0; i<items.length(); i++){
 					logcat( "Adding item #"+i);
-					temp = new CalEvent();
+					temp = new CalendarEvent();
 					
 					tempJ = items.getJSONObject(i);
 					
@@ -165,27 +163,29 @@ public class EventsFragment extends SherlockFragment {
 					logcat( "Item saved: "+temp.getSummary());
 				}
 				
-				logcat( "Data pushed, Size: "+events.size());
 
 			} catch (JSONException e) {				
 				e.printStackTrace();
+				return false;
 			}
 			//Quit the looper now that we're done with it
 			Looper.myLooper().quit();
 			logcat( "Finished Download");
 			return true;
-
 	}
 
-
-
-
 		@Override
-		protected void onPostExecute(Boolean results) {	
-		//code to be ran in the UI thread after the background thread has completed
-			logcat( "Updating List");
+		protected void onPostExecute(Boolean results)
+		{
 			//Set the action bar back to normal
 			getSherlockActivity().setProgressBarIndeterminateVisibility(Boolean.FALSE);
+			if (!results)
+			{
+				Toast.makeText(getSherlockActivity(), "Events download failed. Try again later.", Toast.LENGTH_SHORT).show();
+				return;
+			}
+		//code to be ran in the UI thread after the background thread has completed
+			logcat( "Updating List");
 			
 			try{
 				//Notify the list of new data
@@ -194,20 +194,12 @@ public class EventsFragment extends SherlockFragment {
 			catch(Exception e){
 				logcat( e.toString());
 			}
-			
 		}
-
 
 	private void logcat(String logtext){
 		//code to write a log.d message if the user allows it in preferences
 		if(PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean("debugging", false))
 			Log.d("RPI", logtext);
 	}
-
-
-
-
   }
-	
-	
 }
