@@ -45,6 +45,7 @@ public class MainActivity extends SherlockFragmentActivity
     private Fragment mapFragment = new MapFragment();
     private Fragment shuttlesFragment = new ShuttlesFragment();
     private Fragment tvguideFragment = new TVGuideFragment();
+    private Fragment dininghallFragment = new DiningHallMenuFragment();
     
     //Initial function
     @Override
@@ -59,12 +60,12 @@ public class MainActivity extends SherlockFragmentActivity
         
         // Generate title array
         title = new String[] { "Weather", "Laundry", "Twitter", "Athletics", "Events", "Shuttles", /*"Directory",
-        		"Building Hours", */"Map", "TV Guide", "Videos" };
+        		"Building Hours", */"Map", "TV Guide", "Videos", "Menu" };
  
         // Generate icon array
         icon = new int[] { R.drawable.ic_wm_weather, R.drawable.ic_wm_laundry, R.drawable.ic_wm_twitter, R.drawable.ic_wm_athletics,
         		R.drawable.ic_wm_event, R.drawable.ic_wm_shuttle, /*R.drawable.ic_wm_directory, */
-        		R.drawable.ic_wm_map, R.drawable.ic_wm_tv, R.drawable.ic_wm_video };
+        		R.drawable.ic_wm_map, R.drawable.ic_wm_tv, R.drawable.ic_wm_video, R.drawable.ic_wm_laundry };
  
         // Locate DrawerLayout in drawer_main.xml
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -268,8 +269,11 @@ public class MainActivity extends SherlockFragmentActivity
         		Toast.makeText(this, "Install the YouTube app before trying again", Toast.LENGTH_LONG).show();
         	}
         	break;
-        
+        case 9: // Dining Hall Menu
+        	ft.replace(R.id.content_frame, dininghallFragment);
+        	break;
         }
+        	
         
         ft.commit();
         mDrawerList.setItemChecked(position, true);
