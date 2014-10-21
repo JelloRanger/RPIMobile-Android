@@ -9,21 +9,54 @@
 
 package edu.rpi.rpimobile.model;
 
+import java.util.ArrayList;
+
 public final class DiningHall
 {
-	private final String diningHall_name;
-	//private final String network_number;
-	//private final String network_url;
+	/**
+	 * name: name of dining hall
+	 * meals: list of meals served in given week
+	 * week: current week of menu (format is MMDDYY, so April 3 2014 would be 040314)
+	 */
+	private String name;
+	private ArrayList<FoodItem> meals;
+	private String week;
 	
-	public DiningHall(String diningHall/*, String number, String URL*/)
-	{
-		this.diningHall_name = diningHall;
-		//this.network_number = number;
-		//this.network_url = URL;
+	// constructor
+	public DiningHall(String n) {
+		name = n;
+		meals = new ArrayList<FoodItem>();
 	}
 	
-	public String getDiningHallName() { return new String(this.diningHall_name); }
-	//public String getNumber() { return new String(this.network_number); }
-	//public String getNetworkURL() { return new String(this.network_url); }
+	// add foodItem
+	public void addFoodItem(FoodItem fi) {
+		meals.add(fi);
+	}
+	
+	// GETTERS
+	public String getName() {
+		return name;
+	}
+	
+	public ArrayList<FoodItem> getMeals() {
+		return meals;
+	}
+	
+	public String getWeek() {
+		return week;
+	}
+	
+	// SETTERS
+	public void setName(String n) {
+		name = n;
+	}
+	
+	public void setMeals(ArrayList<FoodItem> m) {
+		meals = m;
+	}
+	
+	public void setWeek(String w) {
+		week = w;
+	}
 
 }
