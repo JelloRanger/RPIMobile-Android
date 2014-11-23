@@ -30,12 +30,11 @@ import edu.rpi.rpimobile.model.FoodItem;
 
 public class DiningHallItemsFragment extends SherlockListFragment {
 	
-	private SherlockFragmentActivity mActivity;
 	
+	// store meal names
 	private ArrayList<String> foodItems;
 	private ArrayAdapter<String> adapter;
 	
-	//private SherlockFragmentActivity mActivity;
 	private String name; // dining hall name
 	
 	// JSON tag names for food item attributes
@@ -45,12 +44,8 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 	private static final String TAG_ATTRS = "attributes";
 	private static final String TAG_NAME = "name";
 	
-	// Hashmap for ListView
-	public ArrayList<HashMap<String, String>> menuItem;
-	
 	public DiningHallItemsFragment()
 	{
-		menuItem = new ArrayList<HashMap<String, String>>();
 		foodItems = new ArrayList<String>();
 	}
 	
@@ -62,15 +57,11 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	//Upon being selected by the user, this method is called to create the ListView
 	{
-		//super.onCreateView(inflater, container, savedInstanceState);
-		//View rootView = inflater.inflate(R.layout.dininghallitems_fragment, container, false);
 		View rootView = inflater.inflate(R.layout.dininghallitems_second, container, false);
 		
 		Log.d("awef","FIOAEFJIOFJAIOEWJFIOAWFJWEOI");
 		
 		setHasOptionsMenu(true); // Options Menu is the "three-dots" button
-		
-		//new BackGround().execute(getArguments.getString("dinHall"));
 		
 		generateMenuItems(name);
 		
@@ -83,10 +74,8 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 	private void generateMenuItems(String dinHall) {
 		
 		// grab list of dining hall objects
-		//ArrayList<DiningHall> dh = DiningHallMenuFragment.diningHallList;
 		ArrayList<DiningHall> dh = DiningHallMenuFragment.diningHallObjects;
 		
-		Log.d("awef","elbaro");
 		// grab correct dining hall
 		DiningHall hall = null;
 		for (int i = 0; i < dh.size(); i++) {
@@ -106,20 +95,10 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 			menu.put(TAG_DAYOFWEEK, fi.getDayOfWeek());
 			menu.put(TAG_MEAL, fi.getMealTime());
 			menu.put(TAG_STATION, fi.getStation());
-			menuItem.add(menu);
 			
-			//********************************************************************************************
+			// add meal name to display list
 			foodItems.add(fi.getName());
-			Log.d("awef","jacobsdefijfe");
-			//********************************************************************************************
 		}
-		
-		// display dining halls in ListView
-		/*ListView listView = (ListView) getActivity().findViewById(R.id.dininghallfoodlist);
-		ListAdapter adapter = new SimpleAdapter(getActivity(), menuItem, R.layout.dininghallmenu_list_item, 
-				new String[] { TAG_NAME, TAG_DAYOFWEEK, TAG_MEAL, TAG_STATION }, 
-				new int[] { R.id.name, R.id.dayOfWeek, R.id.meal, R.id.station});
-		listView.setAdapter(adapter);*/
 	}
 	
 }
