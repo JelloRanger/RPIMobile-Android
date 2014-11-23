@@ -1,46 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Direct copy of tvguide_fragment.xml for the purpose of the DiningHallItemsFragment -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="horizontal"
-    android:weightSum="1" >
-
-	<TextView
-        android:id="@+id/name"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="2dip"
-        android:paddingTop="6dip"
-        android:textColor="#43bd00"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+<ListView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:id="@android:id/list" >
+	
     
-    <!-- Email Label -->
-    <TextView
-        android:id="@+id/dayOfWeek"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="2dip"
-        android:textColor="#acacac" />
-    
-    <!-- Mobile number label -->
-    <TextView
-        android:id="@+id/meal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="left"
-        android:text="Mobile: "
-        android:textColor="#5d5d5d"
-        android:textStyle="bold" />
-    
-    <!-- Station label -->
-    <TextView
-        android:id="@+id/station"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="left"
-        android:text="Station: "
-        android:textColor="#5e5e5e"
-        android:textStyle="bold" />
-    </LinearLayout>
+	
+</ListView>

@@ -57,7 +57,7 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	//Upon being selected by the user, this method is called to create the ListView
 	{
-		View rootView = inflater.inflate(R.layout.dininghallitems_second, container, false);
+		View rootView = inflater.inflate(R.layout.dininghallitems_fragment, container, false);
 		
 		Log.d("awef","FIOAEFJIOFJAIOEWJFIOAWFJWEOI");
 		
@@ -65,7 +65,7 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 		
 		generateMenuItems(name);
 		
-		adapter = new ArrayAdapter<String>(getSherlockActivity(), R.layout.dininghallitems_fragment, R.id.name, foodItems);
+		adapter = new ArrayAdapter<String>(getSherlockActivity(), R.layout.dininghallitems_list_item, R.id.name, foodItems);
 		setListAdapter(adapter);
 		
 		return rootView;

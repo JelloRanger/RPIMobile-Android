@@ -58,5 +58,9 @@ public final class DiningHall
 	public void setWeek(String w) {
 		week = w;
 	}
-
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

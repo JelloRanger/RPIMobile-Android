@@ -12,6 +12,7 @@ package edu.rpi.rpimobile;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,9 +38,9 @@ import edu.rpi.rpimobile.model.FoodItem;
 public class DiningHallMenuFragment extends SherlockListFragment
 /** Class used to implement the TV Guide feature */
 {
-	public static ArrayList<String> diningHalls;
+	public static ArrayList<DiningHall> diningHalls;
 	public static ArrayList<DiningHall> diningHallObjects;
-	private ArrayAdapter<String> adapter;
+	private ArrayAdapter<DiningHall> adapter;
 	
 	// URL to get sodexo menu JSON
 	private static String url = "http://m.uploadedit.com/b042/1416705987325.txt"; // FOR TEST PURPOSES
@@ -56,7 +57,7 @@ public class DiningHallMenuFragment extends SherlockListFragment
 	public DiningHallMenuFragment()
 	{
 		diningHallObjects = new ArrayList<DiningHall>();
-		diningHalls = new ArrayList<String>();
+		diningHalls = new ArrayList<DiningHall>();
 	}
 	
 	@Override
@@ -67,18 +68,23 @@ public class DiningHallMenuFragment extends SherlockListFragment
 		View rootView = inflater.inflate(R.layout.dininghallmenu_fragment, container, false);
 		setHasOptionsMenu(true); // Options Menu is the "three-dots" button
 		
-		// clear list of dining halls before filling in data from json file
-		diningHalls.clear();
-		diningHallObjects.clear();
+		if (diningHalls.size() == 0) {
 		
-		// parse json for relevant data
-		grabData();
+			// parse json for relevant data
+			grabData();
+		
+		}
 		
 		// sort dining halls alphabetically
-		Collections.sort(diningHalls);
+		Collections.sort(diningHalls, new Comparator<DiningHall>() {
+			@Override
+			public int compare(DiningHall d1, DiningHall d2) {
+				return d1.getName().compareTo(d2.getName());
+			}
+		});
 		
 		
-		adapter = new ArrayAdapter<String>(getSherlockActivity(), R.layout.dininghallmenu_list_item, R.id.name, diningHalls);
+		adapter = new ArrayAdapter<DiningHall>(getSherlockActivity(), R.layout.dininghallmenu_list_item, diningHalls);
 		setListAdapter(adapter);
 		
 		return rootView;
@@ -109,7 +115,7 @@ public class DiningHallMenuFragment extends SherlockListFragment
 								// construct dining hall object
 								DiningHall dh = new DiningHall(diningHall);
 								
-								diningHalls.add(diningHall);
+								diningHalls.add(dh);
 								
 								// Menu node is JSON Object
 								JSONArray menu = c.getJSONArray(TAG_MENU);
