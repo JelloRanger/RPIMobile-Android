@@ -15,13 +15,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.app.SherlockListFragment;
 
 import edu.rpi.rpimobile.model.DiningHall;
@@ -32,8 +31,8 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 	
 	
 	// store meal names
-	private ArrayList<String> foodItems;
-	private ArrayAdapter<String> adapter;
+	private ArrayList<FoodItem> foodItems;
+	private DiningHallItemsListAdapter listadapter;
 	
 	private String name; // dining hall name
 	
@@ -46,7 +45,7 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 	
 	public DiningHallItemsFragment()
 	{
-		foodItems = new ArrayList<String>();
+		foodItems = new ArrayList<FoodItem>();
 	}
 	
 	public void setDiningHallParameters(String n) {
@@ -59,14 +58,14 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 	{
 		View rootView = inflater.inflate(R.layout.dininghallitems_fragment, container, false);
 		
-		Log.d("awef","FIOAEFJIOFJAIOEWJFIOAWFJWEOI");
-		
 		setHasOptionsMenu(true); // Options Menu is the "three-dots" button
 		
 		generateMenuItems(name);
 		
-		adapter = new ArrayAdapter<String>(getSherlockActivity(), R.layout.dininghallitems_list_item, R.id.name, foodItems);
-		setListAdapter(adapter);
+		//ListView foodItemsList = (ListView) rootView.findViewById(android.R.id.dininglist);
+		ListView foodItemsList = (ListView) rootView.findViewById(android.R.id.list);
+		listadapter = new DiningHallItemsListAdapter(this.getSherlockActivity(), foodItems);
+		foodItemsList.setAdapter(listadapter);
 		
 		return rootView;
 	}
@@ -97,7 +96,7 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 			menu.put(TAG_STATION, fi.getStation());
 			
 			// add meal name to display list
-			foodItems.add(fi.getName());
+			foodItems.add(fi);
 		}
 	}
 	

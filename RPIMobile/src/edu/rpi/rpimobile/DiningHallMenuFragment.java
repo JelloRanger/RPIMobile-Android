@@ -92,65 +92,65 @@ public class DiningHallMenuFragment extends SherlockListFragment
 	
 	private void grabData() {
 		// Creating service hander class instance
-					ServiceHandler sh = new ServiceHandler();
+		ServiceHandler sh = new ServiceHandler();
+		
+		// allow this to run on main thread
+		ThreadPolicy tp = ThreadPolicy.LAX;
+		StrictMode.setThreadPolicy(tp);
+		
+		String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET);
+		
+		if (jsonStr != null) {
+			try {
+				//grab jsonarray
+				JSONArray arr = new JSONArray(jsonStr);
+				
+				// loop thru all dining halls
+				for (int i = 0; i < arr.length(); i++) {
 					
-					// allow this to run on main thread
-					ThreadPolicy tp = ThreadPolicy.LAX;
-					StrictMode.setThreadPolicy(tp);
+					// grab individual dining hall
+					JSONObject c = arr.getJSONObject(i);
+					String diningHall = c.getString(TAG_DININGHALL);
 					
-					String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET);
+					// construct dining hall object
+					DiningHall dh = new DiningHall(diningHall);
 					
-					if (jsonStr != null) {
-						try {
-							//grab jsonarray
-							JSONArray arr = new JSONArray(jsonStr);
-							
-							// loop thru all dining halls
-							for (int i = 0; i < arr.length(); i++) {
-								
-								// grab individual dining hall
-								JSONObject c = arr.getJSONObject(i);
-								String diningHall = c.getString(TAG_DININGHALL);
-								
-								// construct dining hall object
-								DiningHall dh = new DiningHall(diningHall);
-								
-								diningHalls.add(dh);
-								
-								// Menu node is JSON Object
-								JSONArray menu = c.getJSONArray(TAG_MENU);
-								for (int x = 0; x < menu.length(); x++) {
-									JSONObject d = menu.getJSONObject(x);
-									
-									// create FoodItem
-									FoodItem fi = new FoodItem();
-									
-									// grab all attributes of FoodItem
-									JSONArray attrs = d.getJSONArray(TAG_ATTRS);
-									for (int j = 0; j < attrs.length(); j++) {
-										fi.addAttribute(attrs.getString(j));
-									}
-									
-									// grab other properties of food item
-									fi.setDayOfWeek(d.getString(TAG_DAYOFWEEK));
-									fi.setMealTime(d.getString(TAG_MEAL));
-									fi.setName(d.getString(TAG_NAME));
-									fi.setStation(d.getString(TAG_STATION));
-									
-									// add FoodItem to dining hall
-									dh.addFoodItem(fi);
-									
-								}
-								
-								// add dining hall to dining hall list
-								diningHallObjects.add(dh);
-							}
-						} catch (JSONException e) {
-							e.printStackTrace();
+					diningHalls.add(dh);
+					
+					// Menu node is JSON Object
+					JSONArray menu = c.getJSONArray(TAG_MENU);
+					for (int x = 0; x < menu.length(); x++) {
+						JSONObject d = menu.getJSONObject(x);
+						
+						// create FoodItem
+						FoodItem fi = new FoodItem();
+						
+						// grab all attributes of FoodItem
+						JSONArray attrs = d.getJSONArray(TAG_ATTRS);
+						for (int j = 0; j < attrs.length(); j++) {
+							fi.addAttribute(attrs.getString(j));
 						}
-					} else {
-						Log.e("ServiceHandler", "Couldn't get any data from the url");
+						
+						// grab other properties of food item
+						fi.setDayOfWeek(d.getString(TAG_DAYOFWEEK));
+						fi.setMealTime(d.getString(TAG_MEAL));
+						fi.setName(d.getString(TAG_NAME));
+						fi.setStation(d.getString(TAG_STATION));
+						
+						// add FoodItem to dining hall
+						dh.addFoodItem(fi);
+						
 					}
+					
+					// add dining hall to dining hall list
+					diningHallObjects.add(dh);
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		} else {
+			Log.e("ServiceHandler", "Couldn't get any data from the url");
+		}
 	}
 	
 	@Override
