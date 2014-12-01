@@ -124,14 +124,7 @@ public class GrabDiningHall {
 		if (mealTime != null) {
 			meals = meals.select("tr[class=" + mealTime + "]");
 		}
-		
-		
-		// select based on attr
-		/*if (attr != null) {
-			meals = meals.select("tr img[alt=" + attr + "]");
-		}*/
-		
-		
+			
 		// grab meal names
 		meals = meals.select("div[class=menuitem]");
 		
@@ -140,6 +133,16 @@ public class GrabDiningHall {
 		
 		
 		for (Element meal : meals) {
+			
+			// select based on attr
+			if (attr != null) {
+				
+				// continue if it doesn't match attr
+				if (meal.select("img[alt=" + attr + "]").size() == 0) {
+					continue;
+				}
+			}
+			
 			FoodItem fi = new FoodItem();
 			fi.setName(meal.text());
 			foodItems.add(fi);

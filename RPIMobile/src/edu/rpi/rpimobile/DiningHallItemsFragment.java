@@ -90,7 +90,7 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 			}
 		}
 		
-		GrabDiningHall gdh = new GrabDiningHall(null, null, null, null, null);
+		GrabDiningHall gdh = new GrabDiningHall(null, null, null, null, null); // diningHallURL, dayOfWeek, mealTime, station, attributes
 		if (gdh.determineDiningHall(dinHall)) {
 			foodItems = gdh.parsePage();
 		}
