@@ -11,6 +11,7 @@
 package edu.rpi.rpimobile;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 
@@ -60,9 +62,13 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 		
 		setHasOptionsMenu(true); // Options Menu is the "three-dots" button
 		
-		generateMenuItems(name);
+		try {
+			generateMenuItems(name);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		//ListView foodItemsList = (ListView) rootView.findViewById(android.R.id.dininglist);
 		ListView foodItemsList = (ListView) rootView.findViewById(android.R.id.list);
 		listadapter = new DiningHallItemsListAdapter(this.getSherlockActivity(), foodItems);
 		foodItemsList.setAdapter(listadapter);
@@ -70,7 +76,7 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 		return rootView;
 	}
 	
-	private void generateMenuItems(String dinHall) {
+	private void generateMenuItems(String dinHall) throws IOException {
 		
 		// grab list of dining hall objects
 		ArrayList<DiningHall> dh = DiningHallMenuFragment.diningHallObjects;
@@ -84,8 +90,16 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 			}
 		}
 		
+		GrabDiningHall gdh = new GrabDiningHall(null, null, null, null, null);
+		if (gdh.determineDiningHall(dinHall)) {
+			foodItems = gdh.parsePage();
+		}
+		else {
+			Toast.makeText(getSherlockActivity(), "No available menu for " + dinHall + " Dining Hall at the moment.", Toast.LENGTH_LONG).show();
+		}
+		
 		// loop through meals of dining hall
-		for (int i = 0; i < hall.getMeals().size(); i++) {
+		/*for (int i = 0; i < hall.getMeals().size(); i++) {
 			
 			FoodItem fi = hall.getMeals().get(i);
 			HashMap<String, String> menu = new HashMap<String, String>();
@@ -97,7 +111,7 @@ public class DiningHallItemsFragment extends SherlockListFragment {
 			
 			// add meal name to display list
 			foodItems.add(fi);
-		}
+		}*/
 	}
 	
 }

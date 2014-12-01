@@ -18,15 +18,15 @@
         android:maxLines="5" />
     
     <!-- Email Label -->
-    <TextView
+    <!-- TextView
         android:id="@+id/dayOfWeek"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.25"
-        android:textColor="#acacac" />
+        android:textColor="#acacac" /-->
     
     <!-- Mobile number label -->
-    <TextView
+    <!--TextView
         android:id="@+id/meal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -34,10 +34,10 @@
         android:gravity="left"
         android:text="Mobile: "
         android:textColor="#5d5d5d"
-        android:textStyle="bold" />
+        android:textStyle="bold" /-->
     
     <!-- Station label -->
-    <TextView
+    <!--TextView
         android:id="@+id/station"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -45,5 +45,5 @@
         android:gravity="left"
         android:text="Station: "
         android:textColor="#5e5e5e"
-        android:textStyle="bold" />
+        android:textStyle="bold" /-->
     </LinearLayout>

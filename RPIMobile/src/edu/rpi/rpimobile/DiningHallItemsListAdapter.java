@@ -52,15 +52,15 @@ public class DiningHallItemsListAdapter extends BaseAdapter {
 		
 		// grab the textviews
 		TextView tvName = (TextView) itemView.findViewById(R.id.name);
-		TextView tvDayOfWeek = (TextView) itemView.findViewById(R.id.dayOfWeek);
+		/*TextView tvDayOfWeek = (TextView) itemView.findViewById(R.id.dayOfWeek);
 		TextView tvMeal = (TextView) itemView.findViewById(R.id.meal);
-		TextView tvStation = (TextView) itemView.findViewById(R.id.station);
+		TextView tvStation = (TextView) itemView.findViewById(R.id.station);*/
 		
 		// set the text properly for each textview
 		tvName.setText(foodItems.get(position).getName());
-		tvDayOfWeek.setText(foodItems.get(position).getDayOfWeek());
+		/*tvDayOfWeek.setText(foodItems.get(position).getDayOfWeek());
 		tvMeal.setText(foodItems.get(position).getMealTime());
-		tvStation.setText(foodItems.get(position).getStation());
+		tvStation.setText(foodItems.get(position).getStation());*/
 		
 		return itemView;
 	}

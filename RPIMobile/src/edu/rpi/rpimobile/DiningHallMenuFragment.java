@@ -71,7 +71,13 @@ public class DiningHallMenuFragment extends SherlockListFragment
 		if (diningHalls.size() == 0) {
 		
 			// parse json for relevant data
-			grabData();
+			//grabData();
+			
+			DiningHall dh1 = new DiningHall("Commons");
+			DiningHall dh2 = new DiningHall("Sage");
+			DiningHall dh3 = new DiningHall("BARH");
+			DiningHall dh4 = new DiningHall("Blitman");
+			diningHalls.add(dh1);diningHalls.add(dh2);diningHalls.add(dh3);diningHalls.add(dh4);
 		
 		}
 		
