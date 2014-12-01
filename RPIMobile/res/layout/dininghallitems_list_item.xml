@@ -6,7 +6,15 @@
     android:orientation="horizontal"
     android:weightSum="1" >
 
-	<TextView
+    <TextView 
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:gravity="center_vertical|left"
+        android:minLines="2" />
+    
+	<!-- TextView
         android:id="@+id/name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -15,7 +23,7 @@
         android:textSize="15sp"
         android:gravity="center_vertical|left"
         android:minLines="5"
-        android:maxLines="5" />
+        android:maxLines="5" /-->
     
     <!-- Email Label -->
     <!-- TextView
